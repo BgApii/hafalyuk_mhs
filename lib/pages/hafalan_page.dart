@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
+import 'package:hafalyuk_mhs/pages/detail_setoran_page.dart';
+import 'package:hafalyuk_mhs/pages/informasi_setoran_page.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
 import 'package:hafalyuk_mhs/services/hafalan_service.dart';
 import 'package:hafalyuk_mhs/pages/login_page.dart';
@@ -33,163 +35,291 @@ class _HafalanPageState extends State<HafalanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: FutureBuilder<SetoranMhs>(
+        future: _setoranFuture,
+        builder: (context, snapshot) {
+          String name = "Unknown Name";
+          String nim = "Unknown NIM";
+          if (snapshot.hasData &&
+              snapshot.data!.response == true &&
+              snapshot.data!.data != null) {
+            final info = snapshot.data!.data!.info;
+            name = info?.nama ?? "Unknown Name";
+            nim = info?.nim ?? "Unknown NIM";
+          }
+          return Drawer(
+            child: Column(
+              children: [
+                // Header tanpa gambar
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 20, top: 70, bottom: 20),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF1976D2), Color(0xFF0D47A1)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        nim,
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+                // Menu
+                ListTile(
+                  leading: const Icon(Icons.info),
+                  title: const Text("Informasi Mahasiswa"),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.book),
+                  title: const Text("Informasi Setoran"),
+                  onTap: () async{
+                    Navigator.pop(context); // Close the drawer
+                    final setoranMhs = await _setoranFuture;
+                    if (setoranMhs.response == true && setoranMhs.data != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InformasiSetoranPage(setoran: setoranMhs.data!.setoran),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Gagal memuat data setoran.')),
+                      );
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.list),
+                  title: const Text("Detail Setoran"),
+                  onTap: () async{
+                    Navigator.pop(context); // Close the drawer
+                    final setoranMhs = await _setoranFuture;
+                    if (setoranMhs.response == true && setoranMhs.data != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailSetoranPage(setoran: setoranMhs.data!.setoran),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Gagal memuat detail setoran.')),
+                      );
+                    }
+                  },
+                ),
+                const Spacer(),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text("Keluar"),
+                  onTap: () async {
+                    await authService.logout();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
       appBar: AppBar(
-        title: const Text('Data Setoran Saya'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authService.logout();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
+        centerTitle: true,
+        title: const Text('Informasi Mahasiswa'),
+      ),
+      body: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFFFFFFF), // Warna atas
+              Color(0xFF53AAD9), // Warna bawah
+            ],
+          ),
+        ),
+        child: RefreshIndicator(
+          color: Colors.blueAccent,
+          onRefresh: _refreshData,
+          child: FutureBuilder<SetoranMhs>(
+            future: _setoranFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.blueAccent),
+                );
+              } else if (snapshot.hasError) {
+                if (snapshot.error.toString().contains('Session expired')) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Sesi Anda telah berakhir. Silakan login kembali.',
+                        ),
+                      ),
+                    );
+                  });
+                  return const Center(
+                    child: Text('Mengalihkan ke halaman login...'),
+                  );
+                }
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData ||
+                  snapshot.data!.response != true ||
+                  snapshot.data!.data == null) {
+                return const Center(child: Text('No data available'));
+              }
+
+              final setoranData = snapshot.data!.data!;
+              final info = setoranData.info;
+              final setoran = setoranData.setoran;
+
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: Color(0xFFD9D9D9),
+                              width: 1,
+                            ),
+                          ),
+                          elevation: 2,
+
+                          color: const Color(0xFFF9FAFB),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                InfoItem(
+                                  icon: Icons.person,
+                                  label: 'Nama',
+                                  value: info?.nama,
+                                ),
+                                InfoItem(
+                                  icon: Icons.badge,
+                                  label: 'NIM',
+                                  value: info?.nim,
+                                ),
+                                InfoItem(
+                                  icon: Icons.email,
+                                  label: 'Email',
+                                  value: info?.email,
+                                ),
+                                Divider(color: Colors.grey[300], thickness: 1),
+                                InfoItem(
+                                  icon: Icons.school,
+                                  label: 'Angkatan',
+                                  value: info?.angkatan,
+                                ),
+                                InfoItem(
+                                  icon: Icons.calendar_today,
+                                  label: 'Semester',
+                                  value: info?.semester?.toString(),
+                                ),
+                                InfoItem(
+                                  icon: Icons.supervisor_account,
+                                  label: 'Dosen PA',
+                                  value: info?.dosenPa?.nama,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: FutureBuilder<SetoranMhs>(
-          future: _setoranFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              if (snapshot.error.toString().contains('Session expired')) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Sesi Anda telah berakhir. Silakan login kembali.'),
-                    ),
-                  );
-                });
-                return const Center(child: Text('Mengalihkan ke halaman login...'));
-              }
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData ||
-                snapshot.data!.response != true ||
-                snapshot.data!.data == null) {
-              return const Center(child: Text('No data available'));
-            }
-
-            final setoranData = snapshot.data!.data!;
-            final info = setoranData.info;
-            final setoran = setoranData.setoran;
-
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(), // Pastikan scroll selalu aktif
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Informasi Mahasiswa',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Nama: ${info?.nama ?? "N/A"}'),
-                            Text('NIM: ${info?.nim ?? "N/A"}'),
-                            Text('Email: ${info?.email ?? "N/A"}'),
-                            Text('Angkatan: ${info?.angkatan ?? "N/A"}'),
-                            Text('Semester: ${info?.semester?.toString() ?? "N/A"}'),
-                            Text('Dosen PA: ${info?.dosenPa?.nama ?? "N/A"}'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Informasi Setoran',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    if (setoran != null && setoran.infoDasar != null)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Total Wajib Setor: ${setoran.infoDasar!.totalWajibSetor ?? 0}'),
-                              Text('Total Sudah Setor: ${setoran.infoDasar!.totalSudahSetor ?? 0}'),
-                              Text('Total Belum Setor: ${setoran.infoDasar!.totalBelumSetor ?? 0}'),
-                              Text('Progres Setoran: ${setoran.infoDasar!.persentaseProgresSetor ?? 0}%'),
-                              Text('Terakhir Setor: ${setoran.infoDasar!.terakhirSetor ?? "N/A"}'),
-                            ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Ringkasan Setoran',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    if (setoran == null || setoran.ringkasan == null || setoran.ringkasan!.isEmpty)
-                      const Text('Belum ada ringkasan setoran.')
-                    else
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: setoran.ringkasan!.length,
-                        itemBuilder: (context, index) {
-                          final ringkasan = setoran.ringkasan![index];
-                          return Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Label: ${ringkasan.label ?? "N/A"}'),
-                                  Text('Total Wajib Setor: ${ringkasan.totalWajibSetor ?? 0}'),
-                                  Text('Total Sudah Setor: ${ringkasan.totalSudahSetor ?? 0}'),
-                                  Text('Total Belum Setor: ${ringkasan.totalBelumSetor ?? 0}'),
-                                  Text('Progres Setoran: ${ringkasan.persentaseProgresSetor ?? 0}%'),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Detail Setoran',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    if (setoran == null || setoran.detail == null || setoran.detail!.isEmpty)
-                      const Text('Belum ada detail setoran.')
-                    else
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: setoran.detail!.length,
-                        itemBuilder: (context, index) {
-                          final detail = setoran.detail![index];
-                          return ListTile(
-                            title: Text('${detail.nama ?? "N/A"} - ${detail.label ?? "N/A"}'),
-                            subtitle: Text('Sudah Setor: ${detail.sudahSetor == true ? "Ya" : "Belum"}'),
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
         ),
+      ),
+    );
+  }
+}
+
+class InfoItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String? value;
+
+  const InfoItem({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.blueAccent, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$label:',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value ?? 'N/A',
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

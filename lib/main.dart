@@ -38,6 +38,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Setoran Hafalan',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFF8BC5E9),
+          scrolledUnderElevation: 0,
+        ),
         primarySwatch: Colors.blue,
         textSelectionTheme: TextSelectionThemeData(
           selectionColor: Colors.blue.shade100,
