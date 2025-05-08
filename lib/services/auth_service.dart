@@ -1,15 +1,17 @@
+// auth_service.dart
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hafalyuk_mhs/models/login_model.dart';
 
 class AuthService {
-  final String? kcUrl = dotenv.env['KC_URL'] ?? 'https://your-api-url.com';
-  final String? clientId = dotenv.env['CLIENT_ID'] ?? 'setoran-mobile-dev';
-  final String? clientSecret =
-      dotenv.env['CLIENT_SECRET'] ?? 'dkskodkoskaoadmpoOIJONWNdioniwnn';
+  final String? kcUrl = dotenv.env['KC_URL'];
+  final String? clientId = dotenv.env['CLIENT_ID'];
+  final String? clientSecret = dotenv.env['CLIENT_SECRET'];
   final _storage = const FlutterSecureStorage();
   final Dio dio = Dio();
+  Timer? _refreshTimer;
 
   AuthService() {
     print('AuthService initialized with KC_URL: $kcUrl');
@@ -24,8 +26,8 @@ class AuthService {
             print('Access token expired, attempting to refresh...');
             try {
               await _refreshToken();
+              e.requestOptions.headers['Authorization'] = dio.options.headers['Authorization'];
               final clonedRequest = await dio.fetch(e.requestOptions);
-              print('Token refreshed successfully, retrying request...');
               return handler.resolve(clonedRequest);
             } catch (refreshError) {
               print('Refresh token failed: $refreshError');
@@ -62,39 +64,24 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = response.data;
       final loginResponse = LoginRespons.fromJson(data);
-      await _storage.write(
-        key: 'access_token',
-        value: loginResponse.accessToken,
-      );
-      await _storage.write(
-        key: 'refresh_token',
-        value: loginResponse.refreshToken,
-      );
-      print(
-        'Tokens saved: access_token=${loginResponse.accessToken}, refresh_token=${loginResponse.refreshToken}',
-      );
+      await _storage.write(key: 'access_token', value: loginResponse.accessToken);
+      await _storage.write(key: 'refresh_token', value: loginResponse.refreshToken);
+
+      dio.options.headers['Authorization'] = 'Bearer ${loginResponse.accessToken}';
+      _scheduleTokenRefresh();
       return loginResponse;
     } else {
       throw Exception('Login failed: ${response.data}');
     }
   }
 
-  Future<String?> getToken() async {
-    final token = await _storage.read(key: 'access_token');
-    print('Retrieved access_token: $token');
-    return token;
-  }
-
-  Future<String?> getRefreshToken() async {
-    final token = await _storage.read(key: 'refresh_token');
-    print('Retrieved refresh_token: $token');
-    return token;
-  }
+  Future<String?> getToken() async => await _storage.read(key: 'access_token');
+  Future<String?> getRefreshToken() async => await _storage.read(key: 'refresh_token');
 
   Future<void> logout() async {
-    await _storage.delete(key: 'access_token');
-    await _storage.delete(key: 'refresh_token');
-    print('Tokens deleted on logout');
+    _cancelRefreshTimer();
+    await _storage.deleteAll();
+    dio.options.headers.remove('Authorization');
   }
 
   Future<void> _refreshToken() async {
@@ -113,19 +100,35 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      final data = response.data;
-      final newAccessToken = data['access_token'];
-      final newRefreshToken = data['refresh_token'];
+      final newAccessToken = response.data['access_token'];
+      final newRefreshToken = response.data['refresh_token'];
+
       await _storage.write(key: 'access_token', value: newAccessToken);
       await _storage.write(key: 'refresh_token', value: newRefreshToken);
+
       dio.options.headers['Authorization'] = 'Bearer $newAccessToken';
-      print(
-        'Tokens refreshed: access_token=$newAccessToken, refresh_token=$newRefreshToken',
-      );
+      _scheduleTokenRefresh();
     } else {
-      throw Exception(
-        'Failed to refresh token: ${response.statusCode} - ${response.data}',
-      );
+      throw Exception('Failed to refresh token: ${response.data}');
     }
+  }
+
+  void _scheduleTokenRefresh() {
+    _cancelRefreshTimer();
+    _refreshTimer = Timer(
+      const Duration(minutes: 25),
+      () async {
+        try {
+          await _refreshToken();
+        } catch (e) {
+          await logout();
+        }
+      },
+    );
+  }
+
+  void _cancelRefreshTimer() {
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
   }
 }

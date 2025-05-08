@@ -1,3 +1,4 @@
+// setoran_service.dart
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
@@ -12,18 +13,15 @@ class SetoranService {
   SetoranService(this.authService) : dio = authService.dio;
 
   Future<SetoranMhs> getSetoranData() async {
-    final token = await authService.getToken();
-    if (token == null) throw Exception('No token found');
-
-    final response = await dio.get(
-      '$urlApi/$baseUrl/mahasiswa/setoran-saya',
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
-    );
-
-    if (response.statusCode == 200) {
-      return SetoranMhs.fromJson(response.data);
-    } else {
-      throw Exception('Failed to load data: ${response.data}');
+    try {
+      final response = await dio.get('$urlApi/$baseUrl/mahasiswa/setoran-saya');
+      if (response.statusCode == 200) {
+        return SetoranMhs.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) {
+      throw Exception('getSetoranData error: $e');
     }
   }
 }

@@ -15,13 +15,14 @@ void main() async {
   } catch (e) {
     print('Failed to load .env file: $e');
     dotenv.env['KC_URL'] = 'https://your-api-url.com';
-    dotenv.env['CLIENT_ID'] = 'setoran-mobile-dev';
+    dotenv.env['CLIENT_ID'] = 'jualan-mobile';
     dotenv.env['CLIENT_SECRET'] = 'dkskodkoskaoadmpoOIJONWNdioniwnn';
   }
 
   final authService = AuthService();
   final token = await authService.getToken();
-  Widget initialPage = (token != null) ? const HafalanPage() : const LoginPage();
+  Widget initialPage =
+      (token != null) ? const HafalanPage() : const LoginPage();
 
   runApp(MyApp(initialPage: initialPage));
 }
@@ -34,9 +35,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Setoran Hafalan',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        textSelectionTheme: TextSelectionThemeData(
+          selectionColor: Colors.blue.shade100,
+          cursorColor: Colors.grey.shade300,
+          selectionHandleColor: Colors.blue.shade300,
+        ),
       ),
       home: initialPage,
     );
