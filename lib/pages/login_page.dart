@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
-import 'package:hafalyuk_mhs/pages/hafalan_page.dart';
+import 'package:hafalyuk_mhs/pages/dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HafalanPage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     } catch (e) {
       setState(() {
@@ -47,152 +48,150 @@ class _LoginPageState extends State<LoginPage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFFFFFFF), // Warna atas
-                Color(0xFF53AAD9), // Warna bawah
-              ],
-            ),
-          ),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/logo1.png',
-                    width: 230,
-                    height: 230,
-                  ),
-                  SizedBox(height: 30),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Login With Email',
-                          style: TextStyle(
+        backgroundColor: Color(0xFFFFF8E7),
+        resizeToAvoidBottomInset: true, // Allow resizing when keyboard appears
+        body: SingleChildScrollView(
+          // Wrap content in SingleChildScrollView
+          child: Padding(
+            padding: const EdgeInsets.only(right: 24.0, left: 24.0, top: 130),
+            child: Column(
+              children: [
+                Image.asset('assets/images/logo.png', width: 230, height: 230),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Login With Email',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF4A4A4A),
+                        ),
+                      ),
+                      Text(
+                        'Enter your email to sign up for this app',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF888888),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      TextField(
+                        style: GoogleFonts.poppins(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                        cursorColor: Color(0xFF000000),
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          labelText: 'Username',
+                          labelStyle: GoogleFonts.poppins(
+                            color: Color(0xFF888888),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.person,
+                            color: Color(0xFF888888),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Color(0xFF888888)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 0, 0, 0),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        style: GoogleFonts.poppins(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                        cursorColor: Color(0xFF000000),
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          labelStyle: GoogleFonts.poppins(
+                            color: Color(0xFF888888),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.lock,
+                            color: Color(0xFF888888),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Color(0xFF888888),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[500]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 0, 0, 0),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFC2E9D7),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          minimumSize: Size(double.infinity, 50),
+                        ),
+                        onPressed: _login,
+                        child: Text(
+                          'Continue',
+                          style: GoogleFonts.poppins(
+                            color: Color(0xFF4A4A4A),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
                           ),
                         ),
-                        Text(
-                          'Enter your email to sign up for this app',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        TextField(
-                          cursorColor: Color(0xFF000000),
-                          controller: _usernameController,
-                          decoration: InputDecoration(
-                            labelText: 'Username',
-                            labelStyle: TextStyle(color: Colors.grey[600]),
-                            prefixIcon: Icon(
-                              Icons.person,
-                              color: Colors.grey[600],
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey[500]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 0, 0, 0),
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        TextField(
-                          cursorColor: Color(0xFF000000),
-                          controller: _passwordController,
-                          obscureText: !_isPasswordVisible,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: TextStyle(color: Colors.grey[600]),
-                            prefixIcon: Icon(
-                              Icons.lock,
-                              color: Colors.grey[600],
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.grey[600],
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
-                                });
-                              },
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey[500]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 0, 0, 0),
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF000000),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: Size(double.infinity, 50),
-                          ),
-                          onPressed: _login,
+                      ),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
                           child: Text(
-                            'Continue',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            'Wrong username or password!',
+                            style: TextStyle(color: Colors.red, fontSize: 14),
                           ),
                         ),
-                        if (_errorMessage != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text(
-                              'Wrong username or password!',
-                              style: TextStyle(color: Colors.red, fontSize: 14),
-                            ),
-                          ),
-                      ],
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).viewInsets.bottom,
+                ), // Add padding for keyboard
+              ],
             ),
           ),
         ),

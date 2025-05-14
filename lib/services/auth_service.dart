@@ -13,7 +13,6 @@ class AuthService {
   Timer? _refreshTimer;
 
   AuthService() {
-    print('AuthService initialized with KC_URL: $kcUrl');
     _setupInterceptors();
   }
 
@@ -22,10 +21,10 @@ class AuthService {
       InterceptorsWrapper(
         onError: (DioException e, ErrorInterceptorHandler handler) async {
           if (e.response?.statusCode == 401) {
-            print('Access token expired, attempting to refresh...');
             try {
               await _refreshToken();
-              e.requestOptions.headers['Authorization'] = dio.options.headers['Authorization'];
+              e.requestOptions.headers['Authorization'] =
+                  dio.options.headers['Authorization'];
               final clonedRequest = await dio.fetch(e.requestOptions);
               return handler.resolve(clonedRequest);
             } catch (refreshError) {
@@ -63,10 +62,17 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = response.data;
       final loginResponse = LoginRespons.fromJson(data);
-      await _storage.write(key: 'access_token', value: loginResponse.accessToken);
-      await _storage.write(key: 'refresh_token', value: loginResponse.refreshToken);
+      await _storage.write(
+        key: 'access_token',
+        value: loginResponse.accessToken,
+      );
+      await _storage.write(
+        key: 'refresh_token',
+        value: loginResponse.refreshToken,
+      );
 
-      dio.options.headers['Authorization'] = 'Bearer ${loginResponse.accessToken}';
+      dio.options.headers['Authorization'] =
+          'Bearer ${loginResponse.accessToken}';
       _scheduleTokenRefresh();
       return loginResponse;
     } else {
@@ -75,7 +81,8 @@ class AuthService {
   }
 
   Future<String?> getToken() async => await _storage.read(key: 'access_token');
-  Future<String?> getRefreshToken() async => await _storage.read(key: 'refresh_token');
+  Future<String?> getRefreshToken() async =>
+      await _storage.read(key: 'refresh_token');
 
   Future<void> logout() async {
     _cancelRefreshTimer();
@@ -114,16 +121,13 @@ class AuthService {
 
   void _scheduleTokenRefresh() {
     _cancelRefreshTimer();
-    _refreshTimer = Timer(
-      const Duration(minutes: 25),
-      () async {
-        try {
-          await _refreshToken();
-        } catch (e) {
-          await logout();
-        }
-      },
-    );
+    _refreshTimer = Timer(const Duration(minutes: 10), () async {
+      try {
+        await _refreshToken();
+      } catch (e) {
+        await logout();
+      }
+    });
   }
 
   void _cancelRefreshTimer() {
