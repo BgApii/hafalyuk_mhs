@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
+import 'package:hafalyuk_mhs/pages/detail_page.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
 import 'package:hafalyuk_mhs/services/hafalan_service.dart';
 import 'package:hafalyuk_mhs/pages/login_page.dart';
@@ -32,7 +34,7 @@ class _DashboardPageState extends State<DashboardPage>
     _setoranFuture = setoranService.getSetoranData();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // Update UI when tab changes
+      setState(() {});
     });
   }
 
@@ -62,45 +64,82 @@ class _DashboardPageState extends State<DashboardPage>
         animationDuration: const Duration(milliseconds: 300),
         items: const [Icon(Icons.dashboard_rounded), Icon(Icons.person)],
       ),
-      // drawer: FutureBuilder<SetoranMhs>(
-      //   future: _setoranFuture,
-      //   builder: (context, snapshot) {
-      //     String name = "Unknown Name";
-      //     String nim = "Unknown NIM";
-      //     if (snapshot.hasData &&
-      //         snapshot.data!.response == true &&
-      //         snapshot.data!.data != null) {
-      //       final info = snapshot.data!.data!.info;
-      //       name = info?.nama ?? "Unknown Name";
-      //       nim = info?.nim ?? "Unknown NIM";
-      //     }
-      //     return DrawerWidget(
-      //       name: name,
-      //       nim: nim,
-      //       setoranFuture: _setoranFuture,
-      //       authService: authService,
-      //     );
-      //   },
-      // ),
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: CircleAvatar(),
+        leading: FutureBuilder<SetoranMhs>(
+          future: _setoranFuture,
+          builder: (context, snapshot) {
+            if (snapshot.hasData &&
+                snapshot.data!.response == true &&
+                snapshot.data!.data != null) {
+              final info = snapshot.data!.data!.info;
+              String name = info?.nama ?? "Unknown Name";
+              String initials =
+                  name.isNotEmpty
+                      ? name
+                          .trim()
+                          .split(' ')
+                          .map((e) => e[0])
+                          .take(2)
+                          .join()
+                          .toUpperCase()
+                      : "U";
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: CircleAvatar(
+                  backgroundColor: Color(0xFF4A4A4A),
+                  child: Text(
+                    initials,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            }
+            return Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: CircleAvatar(
+                backgroundColor: Colors.grey,
+                child: Text(
+                  "U",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          },
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(Icons.logout_rounded),
+            child: GestureDetector(
+              onTap: () async {
+                await authService.logout();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: Icon(Icons.logout_rounded),
+            ),
           ),
         ],
         centerTitle: true,
-        title: Text(
-          _tabController.index == 0 ? 'Dashboard' : 'Profile',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF4A4A4A),
-          ),
+        title: FutureBuilder<SetoranMhs>(
+          future: _setoranFuture,
+          builder: (context, snapshot) {
+            return Text(
+              _tabController.index == 0 ? 'Dashboard' : 'Profile',
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF4A4A4A),
+              ),
+            );
+          },
         ),
       ),
       body: Container(
@@ -156,315 +195,35 @@ class _DashboardPageState extends State<DashboardPage>
                   final info = setoranData.info;
 
                   final List<Widget> carouselItems = [
-                    Container(
-                      width: 180,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                        border: Border.all(color: Color(0xFF888888), width: 2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Detail',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: Color(0xFF21ABA5),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_right_rounded,
-                                    color: Color(0xFF21ABA5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            CircularPercentIndicator(
-                              radius: 65,
-                              animation: true,
-                              animationDuration: 1200,
-                              lineWidth: 18.0,
-                              percent:
-                                  setoranData
-                                      .setoran
-                                      ?.ringkasan?[0]
-                                      .persentaseProgresSetor
-                                      ?.toDouble() ??
-                                  0.0,
-                              center: Text(
-                                '${setoranData.setoran?.ringkasan?[0].persentaseProgresSetor}%',
-                                style: GoogleFonts.poppins(fontSize: 25),
-                              ),
-                              progressBorderColor: Color(0xFFC2E9D7),
-                              backgroundColor: Color(0xFFD9D9D9),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'KP',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF4A4A4A),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    PercentageIndicator(
+                      setoranData: setoranData,
+                      index: 0,
+                      title: 'KP',
+                      setoranFuture: _setoranFuture,
                     ),
-                    Container(
-                      width: 180,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                        border: Border.all(color: Color(0xFF888888), width: 2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Detail',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: Color(0xFF21ABA5),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_right_rounded,
-                                    color: Color(0xFF21ABA5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            CircularPercentIndicator(
-                              radius: 65,
-                              animation: true,
-                              animationDuration: 1200,
-                              lineWidth: 18.0,
-                              percent:
-                                  setoranData
-                                      .setoran
-                                      ?.ringkasan?[1]
-                                      .persentaseProgresSetor
-                                      ?.toDouble() ??
-                                  0.0,
-                              center: Text(
-                                '${setoranData.setoran?.ringkasan?[1].persentaseProgresSetor}%',
-                                style: GoogleFonts.poppins(fontSize: 25),
-                              ),
-                              progressBorderColor: Color(0xFFC2E9D7),
-                              backgroundColor: Color(0xFFD9D9D9),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'SEMKP',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF4A4A4A),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    PercentageIndicator(
+                      setoranData: setoranData,
+                      index: 1,
+                      title: 'SEMKP',
+                      setoranFuture: _setoranFuture,
                     ),
-                    Container(
-                      width: 180,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                        border: Border.all(color: Color(0xFF888888), width: 2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Detail',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: Color(0xFF21ABA5),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_right_rounded,
-                                    color: Color(0xFF21ABA5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            CircularPercentIndicator(
-                              radius: 65,
-                              animation: true,
-                              animationDuration: 1200,
-                              lineWidth: 18.0,
-                              percent:
-                                  setoranData
-                                      .setoran
-                                      ?.ringkasan?[2]
-                                      .persentaseProgresSetor
-                                      ?.toDouble() ??
-                                  0.0,
-                              center: Text(
-                                '${setoranData.setoran?.ringkasan?[2].persentaseProgresSetor}%',
-                                style: GoogleFonts.poppins(fontSize: 25),
-                              ),
-                              progressBorderColor: Color(0xFFC2E9D7),
-                              backgroundColor: Color(0xFFD9D9D9),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'DAFTAR TA',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF4A4A4A),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    PercentageIndicator(
+                      setoranData: setoranData,
+                      index: 2,
+                      title: 'DAFTAR_TA',
+                      setoranFuture: _setoranFuture,
                     ),
-                    Container(
-                      width: 180,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                        border: Border.all(color: Color(0xFF888888), width: 2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Detail',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: Color(0xFF21ABA5),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_right_rounded,
-                                    color: Color(0xFF21ABA5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            CircularPercentIndicator(
-                              radius: 65,
-                              animation: true,
-                              animationDuration: 1200,
-                              lineWidth: 18.0,
-                              percent:
-                                  setoranData
-                                      .setoran
-                                      ?.ringkasan?[3]
-                                      .persentaseProgresSetor
-                                      ?.toDouble() ??
-                                  0.0,
-                              center: Text(
-                                '${setoranData.setoran?.ringkasan?[3].persentaseProgresSetor}%',
-                                style: GoogleFonts.poppins(fontSize: 25),
-                              ),
-                              progressBorderColor: Color(0xFFC2E9D7),
-                              backgroundColor: Color(0xFFD9D9D9),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'SEMPRO',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF4A4A4A),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    PercentageIndicator(
+                      setoranData: setoranData,
+                      index: 3,
+                      title: 'SEMPRO',
+                      setoranFuture: _setoranFuture,
                     ),
-                    Container(
-                      width: 180,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                        border: Border.all(color: Color(0xFF888888), width: 2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Detail',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: Color(0xFF21ABA5),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_right_rounded,
-                                    color: Color(0xFF21ABA5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            CircularPercentIndicator(
-                              radius: 65,
-                              animation: true,
-                              animationDuration: 1200,
-                              lineWidth: 18.0,
-                              percent:
-                                  setoranData
-                                      .setoran
-                                      ?.ringkasan?[4]
-                                      .persentaseProgresSetor
-                                      ?.toDouble() ??
-                                  0.0,
-                              center: Text(
-                                '${setoranData.setoran?.ringkasan?[4].persentaseProgresSetor}%',
-                                style: GoogleFonts.poppins(fontSize: 25),
-                              ),
-                              progressBorderColor: Color(0xFFC2E9D7),
-                              backgroundColor: Color(0xFFD9D9D9),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'SIDANG TA',
-                              style: GoogleFonts.poppins(
-                                color: Color(0xFF4A4A4A),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    PercentageIndicator(
+                      setoranData: setoranData,
+                      index: 4,
+                      title: 'SIDANG_TA',
+                      setoranFuture: _setoranFuture,
                     ),
                   ];
 
@@ -507,108 +266,104 @@ class _DashboardPageState extends State<DashboardPage>
                             ),
                           ),
                           SizedBox(height: 5),
-                          Container(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFFFFFFF),
-                                    border: Border.all(
-                                      color: Color(0xFF888888),
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(20),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFFFFFFF),
+                                  border: Border.all(
+                                    color: Color(0xFF888888),
+                                    width: 2,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(14.0),
-                                    child: CircularPercentIndicator(
-                                      radius: 75,
-                                      animation: true,
-                                      animationDuration: 1200,
-                                      lineWidth: 18.0,
-                                      percent:
-                                          setoranData
-                                              .setoran
-                                              ?.infoDasar
-                                              ?.persentaseProgresSetor
-                                              ?.toDouble() ??
-                                          0.0,
-                                      center: Text(
-                                        '${setoranData.setoran?.infoDasar?.persentaseProgresSetor}%',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 25,
-                                        ),
-                                      ),
-                                      progressBorderColor: Color(0xFFC2E9D7),
-                                      backgroundColor: Color(0xFFD9D9D9),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(14.0),
+                                  child: CircularPercentIndicator(
+                                    radius: 75,
+                                    animation: true,
+                                    animationDuration: 1200,
+                                    lineWidth: 18.0,
+                                    percent:
+                                        (setoranData
+                                                .setoran
+                                                ?.infoDasar
+                                                ?.persentaseProgresSetor
+                                                ?.toDouble() ??
+                                            0.0) /
+                                        100,
+                                    center: Text(
+                                      '${setoranData.setoran?.infoDasar?.persentaseProgresSetor?.toInt() ?? 0}%',
+                                      style: GoogleFonts.poppins(fontSize: 25),
                                     ),
+                                    progressColor: Color(0xFFC2E9D7),
+                                    backgroundColor: Color(0xFFD9D9D9),
                                   ),
                                 ),
-                                SizedBox(width: 18),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Total Wajib Setor:',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Color(0xFF4A4A4A),
-                                        ),
+                              ),
+                              SizedBox(width: 18),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Total Wajib Setor:',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Color(0xFF4A4A4A),
                                       ),
-                                      Text(
-                                        '${setoranData.setoran?.infoDasar?.totalWajibSetor ?? 0}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Color(0xFF888888),
-                                        ),
+                                    ),
+                                    Text(
+                                      '${setoranData.setoran?.infoDasar?.totalWajibSetor ?? 0}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Color(0xFF888888),
                                       ),
-                                      Divider(
-                                        color: Color(0xFFC2E9D7),
-                                        thickness: 4,
-                                        height: 20,
+                                    ),
+                                    Divider(
+                                      color: Color(0xFFC2E9D7),
+                                      thickness: 4,
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      'Total Sudah Setor:',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Color(0xFF4A4A4A),
                                       ),
-                                      Text(
-                                        'Total Sudah Setor:',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Color(0xFF4A4A4A),
-                                        ),
+                                    ),
+                                    Text(
+                                      '${setoranData.setoran?.infoDasar?.totalSudahSetor ?? 0}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Color(0xFF888888),
                                       ),
-                                      Text(
-                                        '${setoranData.setoran?.infoDasar?.totalSudahSetor ?? 0}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Color(0xFF888888),
-                                        ),
+                                    ),
+                                    Divider(
+                                      color: Color(0xFFC2E9D7),
+                                      thickness: 4,
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      'Total Belum Setor:',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Color(0xFF4A4A4A),
                                       ),
-                                      Divider(
-                                        color: Color(0xFFC2E9D7),
-                                        thickness: 4,
-                                        height: 20,
+                                    ),
+                                    Text(
+                                      '${setoranData.setoran?.infoDasar?.totalBelumSetor ?? 0}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Color(0xFF888888),
                                       ),
-                                      Text(
-                                        'Total Belum Setor:',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Color(0xFF4A4A4A),
-                                        ),
-                                      ),
-                                      Text(
-                                        '${setoranData.setoran?.infoDasar?.totalBelumSetor ?? 0}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          color: Color(0xFF888888),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 16),
                           Text(
@@ -639,7 +394,7 @@ class _DashboardPageState extends State<DashboardPage>
                               ),
                               autoPlayCurve: Curves.fastOutSlowIn,
                               enlargeCenterPage: true,
-                              aspectRatio: 2.0,
+                              enlargeFactor: 0.3,
                               onPageChanged: (index, reason) {
                                 setState(() {
                                   _currentCarouselIndex = index;
@@ -678,6 +433,133 @@ class _DashboardPageState extends State<DashboardPage>
             ),
             // Profile Tab
             ProfilePage(setoranFuture: _setoranFuture),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PercentageIndicator extends StatelessWidget {
+  const PercentageIndicator({
+    super.key,
+    required this.setoranData,
+    required this.index,
+    required this.title,
+    required Future<SetoranMhs> setoranFuture,
+  }) : _setoranFuture = setoranFuture;
+
+  final Data setoranData;
+  final int index;
+  final String title;
+  final Future<SetoranMhs> _setoranFuture;
+
+  @override
+  Widget build(context) {
+    return Container(
+      width: 180,
+      decoration: BoxDecoration(
+        color: Color(0xFFFFFFFF),
+        border: Border.all(color: Color(0xFF888888), width: 2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () async {
+                final setoranMhs = await _setoranFuture;
+                if (setoranMhs.response == true && setoranMhs.data != null) {
+                  // Use title directly as filterLabel since it now matches JSON label format
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder:
+                          (context, animation, secondaryAnimation) => DetailPage(
+                            setoran: setoranMhs.data!.setoran,
+                            filterLabel:
+                                title, // title is already in JSON format (e.g., SIDANG_TA)
+                          ),
+                      transitionsBuilder: (
+                        context,
+                        animation,
+                        secondaryAnimation,
+                        child,
+                      ) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+
+                        var tween = Tween(
+                          begin: begin,
+                          end: end,
+                        ).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                      transitionDuration: const Duration(milliseconds: 500),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Gagal memuat detail setoran.'),
+                    ),
+                  );
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Detail',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Color(0xFF21ABA5),
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_right_rounded,
+                    color: Color(0xFF21ABA5),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 5),
+            CircularPercentIndicator(
+              radius: 65,
+              animation: true,
+              animationDuration: 1200,
+              lineWidth: 18.0,
+              percent:
+                  (setoranData.setoran?.ringkasan?[index].persentaseProgresSetor
+                          ?.toDouble() ??
+                      0.0) /
+                  100,
+              center: Text(
+                '${setoranData.setoran?.ringkasan?[index].persentaseProgresSetor?.toInt() ?? 0}%',
+                style: GoogleFonts.poppins(fontSize: 25),
+              ),
+              progressColor: Color(0xFFC2E9D7),
+              backgroundColor: Color(0xFFD9D9D9),
+            ),
+            SizedBox(height: 8),
+            Text(
+              title.replaceAll(
+                '_',
+                ' ',
+              ), // Display with spaces for readability (e.g., SIDANG TA)
+              style: GoogleFonts.poppins(
+                color: Color(0xFF4A4A4A),
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
           ],
         ),
       ),

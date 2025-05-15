@@ -30,36 +30,56 @@ class ProfilePage extends StatelessWidget {
         return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.only(top: 50.0, right: 24.0, left: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: CircleAvatar(
+                    radius: 70,
+                    backgroundColor: Color(0xFF4A4A4A),
+                    child: Text(
+                      (info?.nama?.isNotEmpty == true
+                          ? info!.nama!
+                              .split(' ')
+                              .map((e) => e[0].toUpperCase())
+                              .take(2)
+                              .join()
+                          : '?'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 60,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                Divider(
+                  color: Color(0xFFC2E9D7),
+                  thickness: 4,
+                  height: 20,
+                  indent: 50,
+                  endIndent: 50,
+                ),
+                SizedBox(height: 16.0),
                 SizedBox(
                   width: double.infinity,
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: const BorderSide(color: Color(0xFFD9D9D9), width: 1),
+                      side: const BorderSide(
+                        color: Color(0xFFD9D9D9),
+                        width: 1,
+                      ),
                     ),
                     elevation: 2,
                     color: const Color(0xFFF9FAFB),
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Center(
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.blueAccent,
-                              child: Icon(
-                                Icons.person,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
                           InfoItem(
                             icon: Icons.person,
                             label: 'Nama',
@@ -74,6 +94,21 @@ class ProfilePage extends StatelessWidget {
                             icon: Icons.email,
                             label: 'Email',
                             value: info?.email ?? 'N/A',
+                          ),
+                          InfoItem(
+                            icon: Icons.calendar_today,
+                            label: 'Semester',
+                            value: info?.semester.toString() ?? 'N/A',
+                          ),
+                          InfoItem(
+                            icon: Icons.school,
+                            label: 'Angkatan',
+                            value: info?.angkatan ?? 'N/A',
+                          ),
+                          InfoItem(
+                            icon: Icons.supervisor_account,
+                            label: 'Dosen PA',
+                            value: info?.dosenPa?.nama ?? 'N/A',
                           ),
                         ],
                       ),

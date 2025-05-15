@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
-import 'package:hafalyuk_mhs/pages/detail_setoran_page.dart';
+import 'package:hafalyuk_mhs/pages/detail_page.dart';
 import 'package:hafalyuk_mhs/pages/informasi_setoran_page.dart';
 import 'package:hafalyuk_mhs/pages/login_page.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
@@ -92,7 +92,7 @@ class DrawerWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DetailSetoranPage(setoran: setoranMhs.data!.setoran),
+                    builder: (context) => DetailPage(setoran: setoranMhs.data!.setoran, filterLabel: '',),
                   ),
                 );
               } else {

@@ -17,9 +17,9 @@ class InfoItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.blueAccent, size: 28),
+          Icon(icon, color: Colors.black, size: 35),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -29,13 +29,12 @@ class InfoItem extends StatelessWidget {
                   '$label:',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
               ],
             ),
