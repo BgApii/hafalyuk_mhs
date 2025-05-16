@@ -4,7 +4,6 @@ class InfoItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  
 
   const InfoItem({
     super.key,
