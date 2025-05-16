@@ -153,8 +153,7 @@ class InfoDasar {
   int? totalWajibSetor;
   int? totalSudahSetor;
   int? totalBelumSetor;
-  int? persentaseProgresSetor;
-  Null tglTerakhirSetor;
+  double? persentaseProgresSetor;
   String? terakhirSetor;
 
   InfoDasar(
@@ -162,15 +161,13 @@ class InfoDasar {
       this.totalSudahSetor,
       this.totalBelumSetor,
       this.persentaseProgresSetor,
-      this.tglTerakhirSetor,
       this.terakhirSetor});
 
   InfoDasar.fromJson(Map<String, dynamic> json) {
     totalWajibSetor = json['total_wajib_setor'];
     totalSudahSetor = json['total_sudah_setor'];
     totalBelumSetor = json['total_belum_setor'];
-    persentaseProgresSetor = json['persentase_progres_setor'];
-    tglTerakhirSetor = json['tgl_terakhir_setor'];
+    persentaseProgresSetor = (json['persentase_progres_setor'] as num?)?.toDouble();
     terakhirSetor = json['terakhir_setor'];
   }
 
@@ -180,7 +177,6 @@ class InfoDasar {
     data['total_sudah_setor'] = this.totalSudahSetor;
     data['total_belum_setor'] = this.totalBelumSetor;
     data['persentase_progres_setor'] = this.persentaseProgresSetor;
-    data['tgl_terakhir_setor'] = this.tglTerakhirSetor;
     data['terakhir_setor'] = this.terakhirSetor;
     return data;
   }
@@ -191,7 +187,7 @@ class Ringkasan {
   int? totalWajibSetor;
   int? totalSudahSetor;
   int? totalBelumSetor;
-  int? persentaseProgresSetor;
+  double? persentaseProgresSetor;
 
   Ringkasan(
       {this.label,
@@ -205,7 +201,7 @@ class Ringkasan {
     totalWajibSetor = json['total_wajib_setor'];
     totalSudahSetor = json['total_sudah_setor'];
     totalBelumSetor = json['total_belum_setor'];
-    persentaseProgresSetor = json['persentase_progres_setor'];
+    persentaseProgresSetor = (json['persentase_progres_setor'] as num?)?.toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -224,16 +220,14 @@ class Detail {
   String? nama;
   String? label;
   bool? sudahSetor;
-  Null infoSetoran;
 
-  Detail({this.id, this.nama, this.label, this.sudahSetor, this.infoSetoran});
+  Detail({this.id, this.nama, this.label, this.sudahSetor});
 
   Detail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nama = json['nama'];
     label = json['label'];
     sudahSetor = json['sudah_setor'];
-    infoSetoran = json['info_setoran'];
   }
 
   Map<String, dynamic> toJson() {
@@ -242,7 +236,6 @@ class Detail {
     data['nama'] = this.nama;
     data['label'] = this.label;
     data['sudah_setor'] = this.sudahSetor;
-    data['info_setoran'] = this.infoSetoran;
     return data;
   }
 }

@@ -25,6 +25,16 @@ class _DashboardPageState extends State<DashboardPage>
   late Future<SetoranMhs> _setoranFuture;
   late TabController _tabController;
   int _currentCarouselIndex = 0;
+  String formatPercentage(double? value) {
+    if (value == null) return '0%';
+    if (value == value.roundToDouble()) {
+      // Whole number: display without decimals
+      return '${value.toInt()}%';
+    } else {
+      // Decimal number: display with one decimal place
+      return '${value.toStringAsFixed(1)}%';
+    }
+  }
 
   @override
   void initState() {
@@ -294,7 +304,12 @@ class _DashboardPageState extends State<DashboardPage>
                                             0.0) /
                                         100,
                                     center: Text(
-                                      '${setoranData.setoran?.infoDasar?.persentaseProgresSetor?.toInt() ?? 0}%',
+                                      formatPercentage(
+                                        setoranData
+                                            .setoran
+                                            ?.infoDasar
+                                            ?.persentaseProgresSetor,
+                                      ),
                                       style: GoogleFonts.poppins(fontSize: 25),
                                     ),
                                     progressColor: Color(0xFFC2E9D7),
@@ -316,7 +331,7 @@ class _DashboardPageState extends State<DashboardPage>
                                       ),
                                     ),
                                     Text(
-                                      '${setoranData.setoran?.infoDasar?.totalWajibSetor ?? 0}',
+                                      '${setoranData.setoran?.infoDasar?.totalWajibSetor ?? 0.0}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         color: Color(0xFF888888),
@@ -335,7 +350,7 @@ class _DashboardPageState extends State<DashboardPage>
                                       ),
                                     ),
                                     Text(
-                                      '${setoranData.setoran?.infoDasar?.totalSudahSetor ?? 0}',
+                                      '${setoranData.setoran?.infoDasar?.totalSudahSetor ?? 0.0}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         color: Color(0xFF888888),
@@ -354,7 +369,7 @@ class _DashboardPageState extends State<DashboardPage>
                                       ),
                                     ),
                                     Text(
-                                      '${setoranData.setoran?.infoDasar?.totalBelumSetor ?? 0}',
+                                      '${setoranData.setoran?.infoDasar?.totalBelumSetor ?? 0.0}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         color: Color(0xFF888888),
@@ -394,7 +409,7 @@ class _DashboardPageState extends State<DashboardPage>
                               ),
                               autoPlayCurve: Curves.fastOutSlowIn,
                               enlargeCenterPage: true,
-                              enlargeFactor: 0.3,
+                              enlargeFactor: 0.27,
                               onPageChanged: (index, reason) {
                                 setState(() {
                                   _currentCarouselIndex = index;
@@ -453,6 +468,16 @@ class PercentageIndicator extends StatelessWidget {
   final int index;
   final String title;
   final Future<SetoranMhs> _setoranFuture;
+  String formatPercentage(double? value) {
+    if (value == null) return '0%';
+    if (value == value.roundToDouble()) {
+      // Whole number: display without decimals
+      return '${value.toInt()}%';
+    } else {
+      // Decimal number: display with one decimal place
+      return '${value.toStringAsFixed(1)}%';
+    }
+  }
 
   @override
   Widget build(context) {
@@ -476,7 +501,11 @@ class PercentageIndicator extends StatelessWidget {
                     context,
                     PageRouteBuilder(
                       pageBuilder:
-                          (context, animation, secondaryAnimation) => DetailPage(
+                          (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                          ) => DetailPage(
                             setoran: setoranMhs.data!.setoran,
                             filterLabel:
                                 title, // title is already in JSON format (e.g., SIDANG_TA)
@@ -533,7 +562,7 @@ class PercentageIndicator extends StatelessWidget {
             SizedBox(height: 5),
             CircularPercentIndicator(
               radius: 65,
-              animation: true,
+              animation: false,
               animationDuration: 1200,
               lineWidth: 18.0,
               percent:
@@ -542,7 +571,9 @@ class PercentageIndicator extends StatelessWidget {
                       0.0) /
                   100,
               center: Text(
-                '${setoranData.setoran?.ringkasan?[index].persentaseProgresSetor?.toInt() ?? 0}%',
+                formatPercentage(
+                  setoranData.setoran?.ringkasan?[index].persentaseProgresSetor,
+                ),
                 style: GoogleFonts.poppins(fontSize: 25),
               ),
               progressColor: Color(0xFFC2E9D7),

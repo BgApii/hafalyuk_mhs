@@ -6,6 +6,16 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 class DetailPage extends StatelessWidget {
   final Setoran? setoran;
   final String filterLabel;
+  String formatPercentage(double? value) {
+    if (value == null) return '0%';
+    if (value == value.roundToDouble()) {
+      // Whole number: display without decimals
+      return '${value.toInt()}%';
+    } else {
+      // Decimal number: display with one decimal place
+      return '${value.toStringAsFixed(1)}%';
+    }
+  }
 
   const DetailPage({super.key, this.setoran, required this.filterLabel});
 
@@ -68,7 +78,7 @@ class DetailPage extends StatelessWidget {
                       percent:
                           (ringkasanEntry.persentaseProgresSetor ?? 0.0) / 100,
                       center: Text(
-                        '${ringkasanEntry.persentaseProgresSetor?.toInt() ?? 0}%',
+                        formatPercentage(ringkasanEntry.persentaseProgresSetor),
                         style: GoogleFonts.poppins(fontSize: 25),
                       ),
                       progressColor: Color(0xFFC2E9D7),
@@ -187,7 +197,7 @@ class DetailPage extends StatelessWidget {
                                   ),
                                 ),
                                 subtitle: Text(
-                                  'Sudah Setor: ${detail.sudahSetor == true ? "Ya" : "Belum"}',
+                                  'Setor: ${detail.sudahSetor == true ? "Sudah" : "Belum"}',
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     color: Colors.grey,
