@@ -1,11 +1,9 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
 import 'package:hafalyuk_mhs/pages/dashboard_page.dart';
 import 'package:hafalyuk_mhs/pages/history_page.dart';
-import 'package:hafalyuk_mhs/pages/login_page.dart';
 import 'package:hafalyuk_mhs/pages/profile_page.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
 import 'package:hafalyuk_mhs/services/hafalan_service.dart';
