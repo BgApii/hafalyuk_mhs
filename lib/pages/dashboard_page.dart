@@ -46,13 +46,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> _refreshData() async {
     try {
-      // Fetch new data using the SetoranService
       final newSetoranFuture = widget.setoranService.getSetoranData();
       setState(() {
-        _currentSetoranFuture = newSetoranFuture; // Update the current future
+        _currentSetoranFuture = newSetoranFuture;
       });
     } catch (e) {
-      // Handle any errors during refresh
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Gagal memperbarui data: $e')),
@@ -67,11 +65,12 @@ class _DashboardPageState extends State<DashboardPage> {
       color: Colors.blueAccent,
       onRefresh: _refreshData,
       child: FutureBuilder<SetoranMhs>(
-        future: _currentSetoranFuture, // Use the tracked future
+        future: _currentSetoranFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const ShimmerLoadingWidget();
-          } else if (snapshot.hasError) {
+          } 
+          else if (snapshot.hasError) {
             if (snapshot.error.toString().contains('Session expired')) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushReplacement(
@@ -107,7 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
               setoranData: setoranData,
               index: 0,
               title: 'KP',
-              setoranFuture: _currentSetoranFuture, // Pass the updated future
+              setoranFuture: _currentSetoranFuture,
             ),
             PercentageIndicator(
               setoranData: setoranData,

@@ -43,114 +43,122 @@ class _MahasiswaPageState extends State<MahasiswaPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: CurvedNavigationBar(
-        height: 60,
-        index: _tabController.index,
-        onTap: (index) {
-          _tabController.animateTo(index);
-        },
-        backgroundColor: const Color(0xFFFFF8E7),
-        animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const [
-          Icon(Icons.dashboard_rounded),
-          Icon(Icons.history),
-          Icon(Icons.person),
-        ],
-      ),
-      appBar: AppBar(
-        leading: FutureBuilder<SetoranMhs>(
-          future: _setoranFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.data!.response == true &&
-                snapshot.data!.data != null) {
-              final info = snapshot.data!.data!.info;
-              String name = info?.nama ?? "Unknown Name";
-              String initials = name.isNotEmpty
-                  ? name
-                      .trim()
-                      .split(' ')
-                      .map((e) => e[0])
-                      .take(2)
-                      .join()
-                      .toUpperCase()
-                  : "U";
-              return Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: CircleAvatar(
-                  backgroundColor: const Color(0xFF4A4A4A),
-                  child: Text(
-                    initials,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+    return Container(
+      color: const Color(0xFFFFF8E7),
+      child: SafeArea(
+        top: false,
+        child: ClipRect(
+          child: Scaffold(
+            bottomNavigationBar: CurvedNavigationBar(
+              height: 60,
+              index: _tabController.index,
+              onTap: (index) {
+                _tabController.animateTo(index);
+              },
+              backgroundColor: const Color(0xFFFFF8E7),
+              animationCurve: Curves.easeInOut,
+              animationDuration: const Duration(milliseconds: 300),
+              items: const [
+                Icon(Icons.dashboard_rounded),
+                Icon(Icons.history),
+                Icon(Icons.person),
+              ],
+            ),
+            appBar: AppBar(
+              leading: FutureBuilder<SetoranMhs>(
+                future: _setoranFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData &&
+                      snapshot.data!.response == true &&
+                      snapshot.data!.data != null) {
+                    final info = snapshot.data!.data!.info;
+                    String name = info?.nama ?? "Unknown Name";
+                    String initials = name.isNotEmpty
+                        ? name
+                            .trim()
+                            .split(' ')
+                            .map((e) => e[0])
+                            .take(2)
+                            .join()
+                            .toUpperCase()
+                        : "U";
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: CircleAvatar(
+                        backgroundColor: const Color(0xFF4A4A4A),
+                        child: Text(
+                          initials,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      child: Text(
+                        "U",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
+                  );
+                },
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: GestureDetector(
+                    onTap: () async {
+                      showLogoutDialog(
+                        context,
+                        authService,
+                      );
+                    },
+                    child: const Icon(Icons.logout_rounded),
                   ),
                 ),
-              );
-            }
-            return Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: CircleAvatar(
-                backgroundColor: Colors.grey,
-                child: Text(
-                  "U",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ],
+              centerTitle: true,
+              title: Text(
+                _tabController.index == 0
+                    ? 'Dashboard'
+                    : _tabController.index == 1
+                        ? 'Riwayat'
+                        : 'Profile',
+                style: GoogleFonts.poppins(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF4A4A4A),
                 ),
               ),
-            );
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector(
-              onTap: () async {
-                showLogoutDialog(
-                  context,
-                  authService,
-                );
-              },
-              child: const Icon(Icons.logout_rounded),
+            ),
+            body: Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                color: Color(0xFFFFF8E7),
+              ),
+              child: TabBarView(
+                controller: _tabController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  DashboardPage(
+                    setoranFuture: _setoranFuture,
+                    authService: authService,
+                    setoranService: setoranService,
+                  ),
+                  HistoryPage(setoranFuture: _setoranFuture),
+                  ProfilePage(setoranFuture: _setoranFuture),
+                ],
+              ),
             ),
           ),
-        ],
-        centerTitle: true,
-        title: Text(
-          _tabController.index == 0
-              ? 'Dashboard'
-              : _tabController.index == 1
-                  ? 'Riwayat'
-                  : 'Profile',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF4A4A4A),
-          ),
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-          color: Color(0xFFFFF8E7),
-        ),
-        child: TabBarView(
-          controller: _tabController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            DashboardPage(
-              setoranFuture: _setoranFuture,
-              authService: authService,
-              setoranService: setoranService,
-            ),
-            HistoryPage(setoranFuture: _setoranFuture),
-            ProfilePage(setoranFuture: _setoranFuture),
-          ],
         ),
       ),
     );
