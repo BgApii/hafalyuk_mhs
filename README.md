@@ -1,6 +1,6 @@
 # Hafalyuk MHS - Aplikasi Manajemen Setoran Hafalan Mahasiswa UIN SUSKA RIAU
 
-<img src="assets/images/logoApp.png" alt="Hafalyuk MHS Logo" width="200"/>
+<img src="assets/images/logoApp.png" alt="Hafalyuk MHS Logo"/>
 
 ---
 
