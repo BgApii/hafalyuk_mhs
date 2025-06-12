@@ -1,6 +1,6 @@
 # Hafalyuk MHS - Aplikasi Manajemen Setoran Hafalan Mahasiswa UIN SUSKA RIAU
 
-![Logo Aplikasi](assets/images/logoApp.png)
+<img src="assets/images/logoApp.png" alt="Hafalyuk MHS Logo" width="200"/>
 
 ---
 
@@ -154,23 +154,23 @@ flutter run
 
 ### Halaman Login
 
-![Screenshot Login](assets/images/screenshot_login.png)
+<img src="assets/images/screenshot_login.png" alt="screenshot login" width="300"/>
 
 ### Dashboard Hafalan
 
-![Screenshot Dashboard](assets/images/screenshot_dashboard.png)
+<img src="assets/images/screenshot_dashboard.png" alt="screenshot dashboard" width="300"/>
 
 ### Riwayat Setoran
 
-![Screenshot Riwayat](assets/images/screenshot_history.png)
+<img src="assets/images/screenshot_history.png" alt="screenshot history" width="300"/>
 
 ### Detail Hafalan
 
-![Screenshot Detail](assets/images/screenshot_detail.png)
+<img src="assets/images/screenshot_detail.png" alt="screenshot detail" width="300"/>
 
 ### Profil Mahasiswa
 
-![Screenshot Profil](assets/images/screenshot_profile.png)
+<img src="assets/images/screenshot_profile.png" alt="screenshot profile" width="300"/>
 
 ---
 
