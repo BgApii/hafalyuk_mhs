@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
+import 'package:hafalyuk_mhs/widgets/detail_bottom_sheet.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class DetailPage extends StatelessWidget {
@@ -164,49 +165,67 @@ class DetailPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Expanded(
-                child:
-                    filteredDetails.isEmpty
-                        ? Center(
-                          child: Text(
-                            'Belum ada detail setoran untuk $filterLabel.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        )
-                        : Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFFFFFF),
-                            border: Border.all(
-                              color: Color(0xFF888888),
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ListView.builder(
-                            itemCount: filteredDetails.length,
-                            itemBuilder: (context, index) {
-                              final detail = filteredDetails[index];
-                              return ListTile(
-                                title: Text(
-                                  detail.nama ?? "N/A",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  'Setor: ${detail.sudahSetor == true ? "Sudah" : "Belum"}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              );
-                            },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFFFFF),
+                    border: Border.all(color: Color(0xFF888888), width: 2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ListView.builder(
+                    itemCount: filteredDetails.length,
+                    itemBuilder: (context, index) {
+                      final detail = filteredDetails[index];
+                      return ListTile(
+                        title: Text(
+                          detail.nama ?? "N/A",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
+                        subtitle: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color:
+                                  detail.sudahSetor == true
+                                      ? Color(0xFFC2E9D7)
+                                      : Color.fromARGB(255, 255, 200, 200),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                detail.sudahSetor == true ? "Sudah" : "Belum",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  color: Colors.black.withOpacity(0.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        trailing: IconButton(
+                          onPressed:
+                              () => showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(25),
+                                  ),
+                                ),
+                                builder:
+                                    (context) =>
+                                        DetailBottomSheet(detail: detail),
+                              ),
+                          icon: Icon(Icons.description_rounded),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           ),

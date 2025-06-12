@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hafalyuk_mhs/models/hafalan_model.dart';
-import 'package:hafalyuk_mhs/widgets/card_item._widget.dart';
+import 'package:hafalyuk_mhs/widgets/card_item_widget.dart';
 
 class ProfilePage extends StatelessWidget {
   final Future<SetoranMhs> setoranFuture;
@@ -37,7 +37,7 @@ class ProfilePage extends StatelessWidget {
                 Center(
                   child: CircleAvatar(
                     radius: 70,
-                    backgroundColor: Color(0xFF4A4A4A),
+                    backgroundColor: const Color(0xFF4A4A4A),
                     child: Text(
                       (info?.nama?.isNotEmpty == true
                           ? info!.nama!
@@ -54,15 +54,15 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 16.0),
-                Divider(
+                const SizedBox(height: 16.0),
+                const Divider(
                   color: Color(0xFFC2E9D7),
                   thickness: 4,
                   height: 20,
                   indent: 50,
                   endIndent: 50,
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 SizedBox(
                   width: double.infinity,
                   child: Card(

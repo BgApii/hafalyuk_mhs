@@ -54,13 +54,14 @@ class Info {
   int? semester;
   DosenPa? dosenPa;
 
-  Info(
-      {this.nama,
-      this.nim,
-      this.email,
-      this.angkatan,
-      this.semester,
-      this.dosenPa});
+  Info({
+    this.nama,
+    this.nim,
+    this.email,
+    this.angkatan,
+    this.semester,
+    this.dosenPa,
+  });
 
   Info.fromJson(Map<String, dynamic> json) {
     nama = json['nama'];
@@ -68,9 +69,10 @@ class Info {
     email = json['email'];
     angkatan = json['angkatan'];
     semester = json['semester'];
-    dosenPa = json['dosen_pa'] != null
-        ? new DosenPa.fromJson(json['dosen_pa'])
-        : null;
+    dosenPa =
+        json['dosen_pa'] != null
+            ? new DosenPa.fromJson(json['dosen_pa'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -110,16 +112,24 @@ class DosenPa {
 }
 
 class Setoran {
+  List<Log>? log;
   InfoDasar? infoDasar;
   List<Ringkasan>? ringkasan;
   List<Detail>? detail;
 
-  Setoran({this.infoDasar, this.ringkasan, this.detail});
+  Setoran({this.log, this.infoDasar, this.ringkasan, this.detail});
 
   Setoran.fromJson(Map<String, dynamic> json) {
-    infoDasar = json['info_dasar'] != null
-        ? new InfoDasar.fromJson(json['info_dasar'])
-        : null;
+    if (json['log'] != null) {
+      log = <Log>[];
+      json['log'].forEach((v) {
+        log!.add(new Log.fromJson(v));
+      });
+    }
+    infoDasar =
+        json['info_dasar'] != null
+            ? new InfoDasar.fromJson(json['info_dasar'])
+            : null;
     if (json['ringkasan'] != null) {
       ringkasan = <Ringkasan>[];
       json['ringkasan'].forEach((v) {
@@ -136,6 +146,9 @@ class Setoran {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.log != null) {
+      data['log'] = this.log!.map((v) => v.toJson()).toList();
+    }
     if (this.infoDasar != null) {
       data['info_dasar'] = this.infoDasar!.toJson();
     }
@@ -149,6 +162,57 @@ class Setoran {
   }
 }
 
+class Log {
+  int? id;
+  String? keterangan;
+  String? aksi;
+  String? ip;
+  String? userAgent;
+  String? timestamp;
+  String? nim;
+  DosenPa? dosenYangMengesahkan;
+
+  Log({
+    this.id,
+    this.keterangan,
+    this.aksi,
+    this.ip,
+    this.userAgent,
+    this.timestamp,
+    this.nim,
+    this.dosenYangMengesahkan,
+  });
+
+  Log.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    keterangan = json['keterangan'];
+    aksi = json['aksi'];
+    ip = json['ip'];
+    userAgent = json['user_agent'];
+    timestamp = json['timestamp'];
+    nim = json['nim'];
+    dosenYangMengesahkan =
+        json['dosen_yang_mengesahkan'] != null
+            ? new DosenPa.fromJson(json['dosen_yang_mengesahkan'])
+            : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['keterangan'] = this.keterangan;
+    data['aksi'] = this.aksi;
+    data['ip'] = this.ip;
+    data['user_agent'] = this.userAgent;
+    data['timestamp'] = this.timestamp;
+    data['nim'] = this.nim;
+    if (this.dosenYangMengesahkan != null) {
+      data['dosen_yang_mengesahkan'] = this.dosenYangMengesahkan!.toJson();
+    }
+    return data;
+  }
+}
+
 class InfoDasar {
   int? totalWajibSetor;
   int? totalSudahSetor;
@@ -156,18 +220,20 @@ class InfoDasar {
   double? persentaseProgresSetor;
   String? terakhirSetor;
 
-  InfoDasar(
-      {this.totalWajibSetor,
-      this.totalSudahSetor,
-      this.totalBelumSetor,
-      this.persentaseProgresSetor,
-      this.terakhirSetor});
+  InfoDasar({
+    this.totalWajibSetor,
+    this.totalSudahSetor,
+    this.totalBelumSetor,
+    this.persentaseProgresSetor,
+    this.terakhirSetor,
+  });
 
   InfoDasar.fromJson(Map<String, dynamic> json) {
     totalWajibSetor = json['total_wajib_setor'];
     totalSudahSetor = json['total_sudah_setor'];
     totalBelumSetor = json['total_belum_setor'];
-    persentaseProgresSetor = (json['persentase_progres_setor'] as num?)?.toDouble();
+    persentaseProgresSetor =
+        (json['persentase_progres_setor'] as num?)?.toDouble();
     terakhirSetor = json['terakhir_setor'];
   }
 
@@ -189,19 +255,21 @@ class Ringkasan {
   int? totalBelumSetor;
   double? persentaseProgresSetor;
 
-  Ringkasan(
-      {this.label,
-      this.totalWajibSetor,
-      this.totalSudahSetor,
-      this.totalBelumSetor,
-      this.persentaseProgresSetor});
+  Ringkasan({
+    this.label,
+    this.totalWajibSetor,
+    this.totalSudahSetor,
+    this.totalBelumSetor,
+    this.persentaseProgresSetor,
+  });
 
   Ringkasan.fromJson(Map<String, dynamic> json) {
     label = json['label'];
     totalWajibSetor = json['total_wajib_setor'];
     totalSudahSetor = json['total_sudah_setor'];
     totalBelumSetor = json['total_belum_setor'];
-    persentaseProgresSetor = (json['persentase_progres_setor'] as num?)?.toDouble();
+    persentaseProgresSetor =
+        (json['persentase_progres_setor'] as num?)?.toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -220,14 +288,19 @@ class Detail {
   String? nama;
   String? label;
   bool? sudahSetor;
+  InfoSetoran? infoSetoran;
 
-  Detail({this.id, this.nama, this.label, this.sudahSetor});
+  Detail({this.id, this.nama, this.label, this.sudahSetor, this.infoSetoran});
 
   Detail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nama = json['nama'];
     label = json['label'];
     sudahSetor = json['sudah_setor'];
+    infoSetoran =
+        json['info_setoran'] != null
+            ? new InfoSetoran.fromJson(json['info_setoran'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -236,6 +309,44 @@ class Detail {
     data['nama'] = this.nama;
     data['label'] = this.label;
     data['sudah_setor'] = this.sudahSetor;
+    if (this.infoSetoran != null) {
+      data['info_setoran'] = this.infoSetoran!.toJson();
+    }
+    return data;
+  }
+}
+
+class InfoSetoran {
+  String? id;
+  String? tglSetoran;
+  String? tglValidasi;
+  DosenPa? dosenYangMengesahkan;
+
+  InfoSetoran({
+    this.id,
+    this.tglSetoran,
+    this.tglValidasi,
+    this.dosenYangMengesahkan,
+  });
+
+  InfoSetoran.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    tglSetoran = json['tgl_setoran'];
+    tglValidasi = json['tgl_validasi'];
+    dosenYangMengesahkan =
+        json['dosen_yang_mengesahkan'] != null
+            ? new DosenPa.fromJson(json['dosen_yang_mengesahkan'])
+            : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['tgl_setoran'] = this.tglSetoran;
+    data['tgl_validasi'] = this.tglValidasi;
+    if (this.dosenYangMengesahkan != null) {
+      data['dosen_yang_mengesahkan'] = this.dosenYangMengesahkan!.toJson();
+    }
     return data;
   }
 }

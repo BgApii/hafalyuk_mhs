@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hafalyuk_mhs/pages/mahasiswa_page.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
-import 'package:hafalyuk_mhs/pages/dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,11 +21,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _authService.login(
         _usernameController.text,
-        _passwordController.text,
+        _passwordController.text, isDosenApp: false,
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const DashboardPage()),
+        MaterialPageRoute(builder: (context) => const MahasiswaPage()),
       );
     } catch (e) {
       setState(() {
@@ -181,7 +181,11 @@ class _LoginPageState extends State<LoginPage> {
                         Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: Text(
-                            'Wrong username or password!',
+                            _errorMessage!.contains('connection error')
+                                ? 'Tidak ada koneksi internet!'
+                                : _errorMessage!.contains('Ini aplikasi untuk mahasiswa')
+                                    ? 'Ini aplikasi untuk mahasiswa!'
+                                    : 'Salah username atau password!',
                             style: TextStyle(color: Colors.red, fontSize: 14),
                           ),
                         ),

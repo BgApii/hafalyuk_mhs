@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hafalyuk_mhs/pages/login_page.dart';
 import 'package:hafalyuk_mhs/pages/dashboard_page.dart';
+import 'package:hafalyuk_mhs/pages/mahasiswa_page.dart';
 import 'package:hafalyuk_mhs/services/auth_service.dart';
 
 void main() async {
@@ -56,7 +57,7 @@ class InitializerWidget extends StatelessWidget {
           return const LoginPage();
         } else {
           final token = snapshot.data;
-          return token != null ? const DashboardPage() : const LoginPage();
+          return token != null ? const MahasiswaPage() : const LoginPage();
         }
       },
     );
