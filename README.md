@@ -150,27 +150,15 @@ flutter run
 
 ---
 
-## Screenshot Aplikasi
+## Screenshot
 
-### Halaman Login
-
-<img src="assets/images/screenshot_login.png" alt="screenshot login" width="300"/>
-
-### Dashboard Hafalan
-
-<img src="assets/images/screenshot_dashboard.png" alt="screenshot dashboard" width="300"/>
-
-### Riwayat Setoran
-
-<img src="assets/images/screenshot_history.png" alt="screenshot history" width="300"/>
-
-### Detail Hafalan
-
-<img src="assets/images/screenshot_detail.png" alt="screenshot detail" width="300"/>
-
-### Profil Mahasiswa
-
-<img src="assets/images/screenshot_profile.png" alt="screenshot profile" width="300"/>
+<p align="center">
+  <img src="assets/images/screenshot_login.png" width="200" style="margin: 10px;"/>
+  <img src="assets/images/screenshot_dashboard.png" width="200" style="margin: 10px;"/>
+  <img src="assets/images/screenshot_history.png" width="200" style="margin: 10px;"/>
+  <img src="assets/images/screenshot_detail.png" width="200" style="margin: 10px;"/>
+  <img src="assets/images/screenshot_profile.png" width="200" style="margin: 10px;"/>
+</p>
 
 ---
 
