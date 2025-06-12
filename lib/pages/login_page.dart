@@ -53,16 +53,16 @@ class _LoginPageState extends State<LoginPage> {
         body: SingleChildScrollView(
           // Wrap content in SingleChildScrollView
           child: Padding(
-            padding: const EdgeInsets.only(right: 24.0, left: 24.0, top: 130),
+            padding: const EdgeInsets.only(right: 24.0, left: 24.0, top: 100),
             child: Column(
               children: [
-                Image.asset('assets/images/logo.png', width: 230, height: 230),
+                Image.asset('assets/images/logoApp.png', width: 210, height: 210),
                 Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Login With Email',
+                        'Login Dengan Email',
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Text(
-                        'Enter your email to sign up for this app',
+                        'Masukkan email dan password',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         onPressed: _login,
                         child: Text(
-                          'Continue',
+                          'Masuk',
                           style: GoogleFonts.poppins(
                             color: Color(0xFF4A4A4A),
                             fontSize: 16,

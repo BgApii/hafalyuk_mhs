@@ -8,6 +8,9 @@ import 'package:hafalyuk_mhs/services/auth_service.dart';
 import 'package:hafalyuk_mhs/services/hafalan_service.dart';
 import 'package:hafalyuk_mhs/pages/login_page.dart';
 import 'package:hafalyuk_mhs/pages/profile_page.dart';
+import 'package:hafalyuk_mhs/widgets/logout_alert.dart';
+import 'package:hafalyuk_mhs/widgets/percentage_indicator.dart';
+import 'package:hafalyuk_mhs/widgets/shimmer_loading.dart';
 import 'package:percent_indicator/flutter_percent_indicator.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -24,13 +27,12 @@ class _DashboardPageState extends State<DashboardPage>
   late Future<SetoranMhs> _setoranFuture;
   late TabController _tabController;
   int _currentCarouselIndex = 0;
+
   String formatPercentage(double? value) {
     if (value == null) return '0%';
     if (value == value.roundToDouble()) {
-      // Whole number: display without decimals
       return '${value.toInt()}%';
     } else {
-      // Decimal number: display with one decimal place
       return '${value.toStringAsFixed(1)}%';
     }
   }
@@ -126,10 +128,9 @@ class _DashboardPageState extends State<DashboardPage>
             padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
               onTap: () async {
-                await authService.logout();
-                Navigator.pushReplacement(
+                showLogoutDialog(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  authService,
                 );
               },
               child: Icon(Icons.logout_rounded),
@@ -158,8 +159,8 @@ class _DashboardPageState extends State<DashboardPage>
         ),
         child: TabBarView(
           controller: _tabController,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            // Hafalan Tab
             RefreshIndicator(
               color: Colors.blueAccent,
               onRefresh: _refreshData,
@@ -167,11 +168,7 @@ class _DashboardPageState extends State<DashboardPage>
                 future: _setoranFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.blueAccent,
-                      ),
-                    );
+                    return ShimmerLoadingWidget();
                   } else if (snapshot.hasError) {
                     if (snapshot.error.toString().contains('Session expired')) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -445,151 +442,7 @@ class _DashboardPageState extends State<DashboardPage>
                 },
               ),
             ),
-            // Profile Tab
             ProfilePage(setoranFuture: _setoranFuture),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PercentageIndicator extends StatelessWidget {
-  const PercentageIndicator({
-    super.key,
-    required this.setoranData,
-    required this.index,
-    required this.title,
-    required Future<SetoranMhs> setoranFuture,
-  }) : _setoranFuture = setoranFuture;
-
-  final Data setoranData;
-  final int index;
-  final String title;
-  final Future<SetoranMhs> _setoranFuture;
-  String formatPercentage(double? value) {
-    if (value == null) return '0%';
-    if (value == value.roundToDouble()) {
-      // Whole number: display without decimals
-      return '${value.toInt()}%';
-    } else {
-      // Decimal number: display with one decimal place
-      return '${value.toStringAsFixed(1)}%';
-    }
-  }
-
-  @override
-  Widget build(context) {
-    return Container(
-      width: 180,
-      decoration: BoxDecoration(
-        color: Color(0xFFFFFFFF),
-        border: Border.all(color: Color(0xFF888888), width: 2),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            InkWell(
-              onTap: () async {
-                final setoranMhs = await _setoranFuture;
-                if (setoranMhs.response == true && setoranMhs.data != null) {
-                  // Use title directly as filterLabel since it now matches JSON label format
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder:
-                          (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                          ) => DetailPage(
-                            setoran: setoranMhs.data!.setoran,
-                            filterLabel:
-                                title, // title is already in JSON format (e.g., SIDANG_TA)
-                          ),
-                      transitionsBuilder: (
-                        context,
-                        animation,
-                        secondaryAnimation,
-                        child,
-                      ) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.easeInOut;
-
-                        var tween = Tween(
-                          begin: begin,
-                          end: end,
-                        ).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
-
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 500),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Gagal memuat detail setoran.'),
-                    ),
-                  );
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Detail',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Color(0xFF21ABA5),
-                    ),
-                  ),
-                  Icon(
-                    Icons.keyboard_arrow_right_rounded,
-                    color: Color(0xFF21ABA5),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 5),
-            CircularPercentIndicator(
-              radius: 65,
-              animation: false,
-              animationDuration: 1200,
-              lineWidth: 18.0,
-              percent:
-                  (setoranData.setoran?.ringkasan?[index].persentaseProgresSetor
-                          ?.toDouble() ??
-                      0.0) /
-                  100,
-              center: Text(
-                formatPercentage(
-                  setoranData.setoran?.ringkasan?[index].persentaseProgresSetor,
-                ),
-                style: GoogleFonts.poppins(fontSize: 25),
-              ),
-              progressColor: Color(0xFFC2E9D7),
-              backgroundColor: Color(0xFFD9D9D9),
-            ),
-            SizedBox(height: 8),
-            Text(
-              title.replaceAll(
-                '_',
-                ' ',
-              ), // Display with spaces for readability (e.g., SIDANG TA)
-              style: GoogleFonts.poppins(
-                color: Color(0xFF4A4A4A),
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
-            ),
           ],
         ),
       ),
