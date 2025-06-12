@@ -1,4 +1,4 @@
-# Hafalyuk MHS - Aplikasi Manajemen Setoran Hafalan Mahasiswa UIN SUSKA RIAU
+# HAFALAN MAHASISWA - Aplikasi Manajemen Setoran Hafalan Mahasiswa UIN SUSKA RIAU
 
 <img src="assets/images/logoApp.png" alt="Hafalyuk MHS Logo"/>
 
@@ -18,9 +18,9 @@
 
   * KP
   * SEMKP
-  * DAFTAR\_TA
+  * DAFTAR TA
   * SEMPRO
-  * SIDANG\_TA
+  * SIDANG TA
 * Visualisasi progres menggunakan indikator persentase dan carousel slider.
 * Statistik total wajib setor, sudah setor, dan belum setor.
 
