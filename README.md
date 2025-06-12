@@ -72,7 +72,7 @@
   * curved\_navigation\_bar
   * shimmer
 * **Manajemen Aset:** File .env, gambar, dan ikon aplikasi.
-* **Ikona:** Material Icons, Cupertino Icons
+* **Ikon:** Material Icons
 
 ---
 
@@ -101,7 +101,7 @@ hafalyuk_mhs/
 
 ### Prasyarat
 
-* Flutter SDK (versi ≥3.7.0)
+* Flutter SDK
 * Editor kode (VS Code atau Android Studio)
 * Emulator atau perangkat fisik untuk pengujian
 
@@ -176,4 +176,4 @@ flutter run
 
 ## Kontak
 
-Untuk pertanyaan atau dukungan, hubungi: **\[[email@example.com](mailto:email@example.com)]**
+Untuk pertanyaan atau dukungan, hubungi: **\[[aprissupandi@gmail.com](mailto:aprissupandi@gmail.com)]**
