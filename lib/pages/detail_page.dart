@@ -10,10 +10,8 @@ class DetailPage extends StatelessWidget {
   String formatPercentage(double? value) {
     if (value == null) return '0%';
     if (value == value.roundToDouble()) {
-      // Whole number: display without decimals
       return '${value.toInt()}%';
     } else {
-      // Decimal number: display with one decimal place
       return '${value.toStringAsFixed(1)}%';
     }
   }
@@ -42,9 +40,9 @@ class DetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          filterLabel,
+          filterLabel.replaceAll('_', ' '),
           style: GoogleFonts.poppins(
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Color(0xFF4A4A4A),
           ),
