@@ -1,12 +1,12 @@
-# Hafalyuk MHS - Aplikasi Manajemen Setoran Hafalan Mahasiswa UIN SUSKA RIAU
+# HAFALAN MAHASISWA - Aplikasi Manajemen Setoran Hafalan Mahasiswa UIN SUSKA RIAU
 
-![Logo Aplikasi](assets/images/logoApp.png)
+<img src="assets/images/logoApp.png" alt="Hafalyuk MHS Logo"/>
 
 ---
 
 ## Deskripsi
 
-**Hafalyuk MHS** adalah aplikasi mobile berbasis Flutter yang dirancang untuk membantu mahasiswa **Universitas Islam Negeri Sultan Syarif Kasim Riau (UIN SUSKA RIAU)** dalam mengelola progres setoran hafalan Al-Qur'an sebagai bagian dari persyaratan akademik. Aplikasi ini memudahkan mahasiswa dalam mencatat, memantau, dan melacak pencapaian hafalan mereka melalui antarmuka yang intuitif dan desain yang responsif.
+**Hafalyuk MHS** adalah aplikasi mobile berbasis Flutter yang dirancang untuk membantu mahasiswa **Universitas Islam Negeri Sultan Syarif Kasim Riau (UIN SUSKA RIAU) Teknik Informatika** dalam mengelola progres setoran hafalan Al-Qur'an sebagai bagian dari persyaratan akademik. Aplikasi ini memudahkan mahasiswa dalam mencatat, memantau, dan melacak pencapaian hafalan mereka melalui antarmuka yang intuitif dan desain yang responsif.
 
 ---
 
@@ -18,9 +18,9 @@
 
   * KP
   * SEMKP
-  * DAFTAR\_TA
+  * DAFTAR TA
   * SEMPRO
-  * SIDANG\_TA
+  * SIDANG TA
 * Visualisasi progres menggunakan indikator persentase dan carousel slider.
 * Statistik total wajib setor, sudah setor, dan belum setor.
 
@@ -72,7 +72,7 @@
   * curved\_navigation\_bar
   * shimmer
 * **Manajemen Aset:** File .env, gambar, dan ikon aplikasi.
-* **Ikona:** Material Icons, Cupertino Icons
+* **Ikon:** Material Icons
 
 ---
 
@@ -101,7 +101,7 @@ hafalyuk_mhs/
 
 ### Prasyarat
 
-* Flutter SDK (versi ≥3.7.0)
+* Flutter SDK
 * Editor kode (VS Code atau Android Studio)
 * Emulator atau perangkat fisik untuk pengujian
 
@@ -110,7 +110,7 @@ hafalyuk_mhs/
 1. **Kloning Repositori:**
 
 ```bash
-git clone <URL_REPOSITORI>
+git clone https://github.com/BgApii/hafalyuk_mhs.git
 cd hafalyuk_mhs
 ```
 
@@ -131,13 +131,7 @@ CLIENT_SECRET=<KEYCLOAK_CLIENT_SECRET>
 flutter pub get
 ```
 
-4. **Konfigurasi Ikon Aplikasi:**
-
-```bash
-flutter pub run flutter_launcher_icons
-```
-
-5. **Jalankan Aplikasi:**
+4. **Jalankan Aplikasi:**
 
 ```bash
 flutter run
@@ -160,57 +154,26 @@ flutter run
 
 ### Halaman Login
 
-![Screenshot Login](assets/images/screenshot_login.png)
+<img src="assets/images/screenshot_login.png" alt="screenshot login" width="300"/>
 
 ### Dashboard Hafalan
 
-![Screenshot Dashboard](assets/images/screenshot_dashboard.png)
+<img src="assets/images/screenshot_dashboard.png" alt="screenshot dashboard" width="300"/>
 
 ### Riwayat Setoran
 
-![Screenshot Riwayat](assets/images/screenshot_history.png)
+<img src="assets/images/screenshot_history.png" alt="screenshot history" width="300"/>
 
 ### Detail Hafalan
 
-![Screenshot Detail](assets/images/screenshot_detail.png)
+<img src="assets/images/screenshot_detail.png" alt="screenshot detail" width="300"/>
 
 ### Profil Mahasiswa
 
-![Screenshot Profil](assets/images/screenshot_profile.png)
-
----
-
-## Kontribusi
-
-1. Fork repositori ini.
-2. Buat branch baru:
-
-```bash
-git checkout -b fitur-baru
-```
-
-3. Commit perubahan:
-
-```bash
-git commit -m "Menambahkan fitur baru"
-```
-
-4. Push ke branch Anda:
-
-```bash
-git push origin fitur-baru
-```
-
-5. Buat Pull Request ke repositori utama.
-
----
-
-## Lisensi
-
-Aplikasi ini bersifat **proprietary** dan hanya untuk penggunaan internal **UIN SUSKA RIAU**. Hubungi pengembang untuk informasi lebih lanjut.
+<img src="assets/images/screenshot_profile.png" alt="screenshot profile" width="300"/>
 
 ---
 
 ## Kontak
 
-Untuk pertanyaan atau dukungan, hubungi: **\[[email@example.com](mailto:email@example.com)]**
+Untuk pertanyaan atau dukungan, hubungi: **\[[aprissupandi@gmail.com](mailto:aprissupandi@gmail.com)]**
